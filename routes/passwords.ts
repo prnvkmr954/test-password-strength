@@ -107,6 +107,35 @@ router.get("/", async (_req: Request, res: Response): Promise<void> => {
   }
 });
 
+// ── GET /users/:username  — Get a single user's public profile ───────────────
+router.get(
+  "/:username",
+  async (req: Request, res: Response): Promise<void> => {
+    const { username } = req.params;
+    try {
+      const db = await getDb();
+      const user = await db
+        .collection<UserDocument>("users")
+        .findOne({ username });
+
+      if (!user) {
+        res.status(404).json({ error: "User not found" });
+        return;
+      }
+
+      res.status(200).json({
+        username: user.username,
+        created_at: user.created_at,
+        updated_at: user.updated_at,
+        password_history_count: user.password_history?.length ?? 0,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+);
+
 // ── POST /users  — Register a new user ───────────────────────────────────────
 router.post(
   "/",

@@ -2,6 +2,7 @@ import * as dotenv from "dotenv";
 dotenv.config(); // Must be called BEFORE any other imports that read process.env
 
 import express from "express";
+import cors from "cors";
 import { getDb, closeConnection } from "./libs/mongodb";
 import { seedDatabase } from "./libs/seeder";
 import passwordRouter from "./routes/passwords";
@@ -10,6 +11,7 @@ const app = express();
 const PORT = process.env.PORT ?? 3000;
 
 // ─── Middleware ───────────────────────────────────────────────────────────────
+app.use(cors());
 app.use(express.json());
 
 // Optional: log every incoming request during development
