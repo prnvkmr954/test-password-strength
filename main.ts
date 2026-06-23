@@ -3,6 +3,7 @@ dotenv.config(); // Must be called BEFORE any other imports that read process.en
 
 import express from "express";
 import { getDb, closeConnection } from "./libs/mongodb";
+import { seedDatabase } from "./libs/seeder";
 import passwordRouter from "./routes/passwords";
 
 const app = express();
@@ -34,6 +35,9 @@ async function start() {
     // "does this username exist?" check before every insert.
     await db.collection("users").createIndex({ username: 1 }, { unique: true });
     console.log("✅ Unique index on users.username ensured");
+
+    // Seed demo data only if the collection is empty
+    await seedDatabase(db);
 
     const server = app.listen(PORT, () => {
       console.log(`\n🚀 Server running at http://localhost:${PORT}`);
